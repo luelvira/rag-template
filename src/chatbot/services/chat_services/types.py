@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 from gradio import ChatMessage
 
-from chatbot.config import BaseConfiguration, Prompts, DEFAULT_CONFIGURATION
+from chatbot.config import BaseConfiguration, DEFAULT_CONFIGURATION
 
 @dataclass
 class Message:
