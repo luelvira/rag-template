@@ -2,6 +2,7 @@ import logging
 from gradio import ChatInterface, Error
 
 from chatbot.services import files
+from chatbot.services.chat_services import chat_service
 
 from chatbot.Exceptions import UploadFileException
 from chatbot.services.chat_services.types import Conversation, Message
@@ -68,8 +69,7 @@ class Chat(ChatInterface):
         if len(self.history) != len(history):
             self.history = [Message.from_chat_message(msg) for msg in history]
         self.history.append(Message(text=msg["text"], own=True))
-        # simulate the response from the service
-        response = {"respuesta": "Aún no está implementado"}
+        response = chat_service.ask_memory(Conversation(chat_history=self.history))
         self.history.append(Message(text=response["respuesta"], own=False))
         return response["respuesta"]
 

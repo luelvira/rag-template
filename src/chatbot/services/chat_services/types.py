@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 from gradio import ChatMessage
 
-from chatbot.config import BaseConfiguration, DEFAULT_CONFIGURATION
+from chatbot.config import BaseConfiguration, DEFAULT_CONFIGURATION, Prompts
 
 @dataclass
 class Message:
@@ -109,3 +109,18 @@ class Conversation:
     """
     chat_history: List[ChatMessage]
     conf: int = DEFAULT_CONFIGURATION
+
+@dataclass
+class ChatbotOptions:
+    """
+    Dataclass used to store and agroup the option used to define a chat.
+
+    Attributes:
+        endpoint (str): The url where the LLM is accesible.
+        configuration (BaseConfiguration): An instance of the BaseConfiguration used to
+                                           setup the rest of parameters
+        propts (Prompts): An instance of the Prompts class used to generate the responses.
+    """
+    endpoint: str
+    configuration: BaseConfiguration
+    propts: Prompts

@@ -23,5 +23,15 @@ services:
       ENABLE_API_BASED_MODULES: 'true'
       CLUSTER_HOSTNAME: 'node1'
 
+  ollama:
+    image: ollama/ollama
+    container_name: ollama-cont
+    ports:
+    - 11434:11434
+    volumes:
+    - ./ollama-data:/root/.ollama:Z
+
+
 volumes:
+    ollama:
     weaviate_data:
