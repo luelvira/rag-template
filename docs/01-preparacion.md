@@ -1,13 +1,15 @@
 # Retrieval augmented generation (RAG)
 
-Un RAG es un sistema diseñado para mejorar la experiencia del usuario al interactuar con un LLM. Para lograrlo, el RAG integra los siguientes componentes:
+Un RAG es un sistema diseñado para mejorar la experiencia del usuario al interactuar con un LLM. Para lograrlo, integra los siguientes componentes:
 
 1.  **Interfaz** Componente diseñado para introducir y mostrar los *prompts* y las respuestas. En este caso, se desarrollará con [gradio](https://www.gradio.app/).
 2.  **Base de datos**: Herramienta utilizada para almacenar y organizar información. En sistemas que empleen LLMs predominan las bases de datos vectoriales, ya que permiten realizar búsquedas basadas en la similitud entre la representación vectorial del contexto y del *prompt* introducido por el usuario.
 3.  **Large Language Model (LLM)** Un LLM es un modelo de lenguaje entrenado mediante aprendizaje autosupervisado que consta de una red neuronal de gran tamaño. Un ejemplo son los modelos GPT de OpenAI, o DeepSeek.
 
 
-El lenguaje de programación utilizado será python debido a predominio en tarea de inteligencia artificial y su facilidad de uso. Una vez este instalado, es conveniente trabajar en entornos virutales.
+## Preparación del entorno
+
+El lenguaje de programación utilizado será python debido a su predominio en tareas de inteligencia artificial y su facilidad de uso. Una vez este instalado, es conveniente trabajar en entornos virtuales.
 
 Un entorno virtual o *virutalenv* es un entorno de ejecución que permite instalar una versión específica de python y modificar la variable `$PYTHONPATH` de modo que las librerías instaladas para un desarrollo no interfieran con el resto de librerías instaladas en el sistema.
 
@@ -18,7 +20,7 @@ Para la creación y activación del entorno virtual con `pyenv`, primero se debe
 ```shell
 pyenv install 3.12
 pyevn virtualenv 3.12 gradio-venv
-pyenv activate venv
+pyenv activate gradio-venv
 ```
 
 Para verificar que el entorno virtual está activado correctamente, en la terminal debería aparecer el nombre del entorno entre paréntesis, por ejemplo: `(gradio-venv)`.
@@ -27,7 +29,7 @@ En el repositorio [rag-template](https://github.com/luelvira/rag-template), se e
 
 **Nota:** En caso de encontrar problemas y querer emplear las mismas versiones empleadas en el desarrollo de esta guía, se ha incluido el fichero `requirements-with-versions.txt`, el cual si incluye la versión de forma explícita.
 
-Para instalar las dependencias, basta con ejecutar, asegurándonos que estemos con el entorno virutal activo.
+Para instalar las dependencias, basta con ejecutar el siguiente comando, asegurándonos que estemos con el entorno virutal activo.
 
 ```shell
 pip install -r requirements.txt

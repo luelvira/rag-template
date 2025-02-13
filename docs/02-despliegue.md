@@ -1,27 +1,13 @@
-- [Implementación de la interfaz](#orgcb71abb)
-  - [Definición de la clase](#org369b3f8)
-  - [Definición del resto de métodos](#orgabb1e47)
-    - [Método `run`](#org2250a9c)
-    - [Método `answer`](#org704015e)
-    - [Archivo final](#orgc0a6d9d)
-  - [Script de ejecución](#orgfcdd48e)
-
-
-
-<a id="orgcb71abb"></a>
-
 # Implementación de la interfaz
 
 Como se ha mencionado, vamos a usar <https://www.gradio.app/> para el desarrollo de la interfaz gráfica. Gradio es framework de python pensado para el desarrollo de experimentos y demostraciones de software de inteligencia artifical que requieren de una interfaz con la que interactuar, sin ser el foco principal del desarrollo.
 
-Gradio ofrece la clase `ChatInterface` que permite levantar una aplicación web muy similar a *ChatGPT*. Partiendo de la clase `ChatInterface`, vamos a crear una nueva clase que herede de esta, y que permita añadir nuevas funcionalidades como procesar ficheros y usar nuestro LLM para generar las respuestas.
+Gradio ofrece la clase `ChatInterface` que permite levantar una aplicación web muy similar a *ChatGPT*. Partiendo de esta clase, vamos a crear una nueva que herede de `ChatInterface`, y que permita añadir nuevas funcionalidades como procesar ficheros y usar nuestro LLM para generar las respuestas.
 
-
-<a id="org369b3f8"></a>
 
 ## Definición de la clase
 
-Creamos el fichero `src/chatbot/chat.py`, importamos las librerías necesarias.
+Dentro de la carpeta `src/chatbot`, Creamos el fichero `src/chatbot/chat.py` e importamos las librerías necesarias.
 
 ```python
 import logging
@@ -82,12 +68,8 @@ El constructor establece varias configuraciones por defecto a la instancia de `C
 6.  Se mantiene la posibilidad de utilizar el resto de argumentos aceptados por el contructor de la clase `ChatInterface`
 
 
-<a id="orgabb1e47"></a>
-
 ## Definición del resto de métodos
 
-
-<a id="org2250a9c"></a>
 
 ### Método `run`
 
@@ -115,19 +97,15 @@ def run(self):
 ```
 
 
-<a id="org704015e"></a>
-
 ### Método `answer`
 
-El método `answer` recibe dos argumentos, el mensaje del usuario y el historial del chat. Retorna un texto como respuesta o un componente de Gradio. En esta versión inicial, simplemente devolverá el mensaje del usuario.
+La función o método encargada de controlar el intercambio de mensajes entre el usuario y el sistema, a la que hemos llamado `answer` recibe dos argumentos, el mensaje del usuario y el historial del chat. Retorna un texto como respuesta o un componente de Gradio. En esta versión inicial, simplemente devolverá el mensaje del usuario.
 
 ```python
 def answer(self, message: str, history: list):
     return f"El usuario ha introducido: {message}"
 ```
 
-
-<a id="orgc0a6d9d"></a>
 
 ### Archivo final
 
@@ -199,8 +177,6 @@ class Chat(ChatInterface):
         self.launch()
 ```
 
-
-<a id="orgfcdd48e"></a>
 
 ## Script de ejecución
 

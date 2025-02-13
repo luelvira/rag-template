@@ -1,21 +1,9 @@
-- [Conexión entre componentes](#org182ddac)
-  - [Weaviate Manager](#orgdb815e2)
-    - [Recuperación de información](#orgc46b48e)
-  - [Integración del chat con el LLM](#org5040c6d)
-  - [prompt service](#orgb0e7862)
-
-
-
-<a id="org182ddac"></a>
-
 # Conexión entre componentes
 
-Al definir que es un RAG, mencionamos que está compueto por varios componentes externos. Por un lado, se encuentra la base de datos y por otro el LLM con el que trabajemos. Normalmente, estos modelos disponen de una API con la que nos debemos comunicar.
+Al definir que es un RAG, mencionamos que está compueto por varios componentes externos. Por un lado, se encuentra la base de datos y por otro el LLM con el que trabajemos. Normalmente, estos modelos disponen de una API con la que nos podemos comunicar.
 
 En este módulo crearemos dos componentes que permitan interactuar tanto con la API del LLM como con la base de datos.
 
-
-<a id="orgdb815e2"></a>
 
 ## Weaviate Manager
 
@@ -40,7 +28,7 @@ from chatbot.config import WeaviateConfig
 logger = logging.getLogger(__name__)
 ```
 
-Cada vez que un usuario interactúe con el chat, se iniciará una nueva conexión con la base de datos. Se define una clase clase encargada de manejar dichas conexiones, creando una nueva instancia cada vez que sea necesario interactuar con la base de datos.
+Cada vez que un usuario interactúe con el chat, se iniciará una nueva conexión con la base de datos. Se define una clase encargada de manejar dichas conexiones, creando una nueva instancia cada vez que sea necesario interactuar con la base de datos.
 
 El constructor de la clase acepta como parámetros los datos necesarios para establecer la configuración, almacenados en el archivo de configuración.
 
@@ -61,7 +49,7 @@ class WeaviateManager:
         self.vectorstore:WeaviateVectorStore|None = None
 ```
 
-También es necesario contar con un método que cierre la conexión entre la base de datos y nuestro sistema. Para ello, aprovechamos la funcionalidad de *Python* que permite implementar una función que se ejecuta automáticamente cuando el recolector de basura elimina la instancia.
+También es necesario contar con un método que cierre la conexión entre la base de datos y nuestro sistema. Para ello, aprovechamos la funcionalidad de *Python* que permite implementar una rutina que se ejecuta automáticamente cuando el recolector de basura elimina la instancia.
 
 ```python
 def close(self):
@@ -124,7 +112,7 @@ def _connect_to_weaviate(self):
         return None
 ```
 
-Una vez establecida la conexión, el siguiente paso es utilizar una estructura de datos compatible con el formato de vectores que maneja *Weaviate*. Para ello emplearemos la clase `WeaviateVectorStore`.
+Una vez establecida la conexión, utilizamos una estructura de datos compatible con el formato de vectores que maneja Weaviate. Para ello emplearemos la clase `WeaviateVectorStore`.
 
 ```python
 def load_vectorstore(self, embed_model, collection_name):
@@ -237,8 +225,6 @@ def delete_collection(self, collection_name):
     self.client.collections.delete(collection_name)
 ```
 
-
-<a id="orgc46b48e"></a>
 
 ### Recuperación de información
 
@@ -719,8 +705,6 @@ class WeaviateManager:
     ```
 
 
-<a id="org5040c6d"></a>
-
 ## Integración del chat con el LLM
 
 El LLM que vamos a usar es [ollama](https://ollama.com/), de *Meta*, ya que es Open Source y relativamente sencillo de usar. Lo primero que vamos a hacer es actualizar el *docker-compose* para incluir un contenedor con el modelo que queramos.
@@ -862,6 +846,8 @@ def _get_retriever(query, options: ChatbotOptions):
 Para complementar esta función, es necesario implementar dos funciones auxiliares. La primera se encarga de proporcionar el *retriever*, y la segunda de proporcionar un mecanismo para hacer las búsquedas de los vectores.
 
 ```python
+def _get_retriever(query, options: ChatbotOptions):
+    """
     Retrieves the necessary components for RAG (Retrieval-Augmented Generation) chain.
 
     This method initializes and returns three key components needed for the RAG process:
@@ -1146,9 +1132,11 @@ def _get_rag_chain(prompt, llm, retriever):
     return rag_chain
 ```
 
-El siguiente paso consiste en emplear nuestro servicio, actualizando el fichero `src/chatbot/chat.py`, tanto el método `answer` como la lista de imports.
+El siguiente paso consiste en emplear nuestro servicio, actualizando los ficheros `src/chatbot/chat.py` y `src/chatbot/services/files.py`.
 
 ```diff
+--- src/chatbot/chat.py
++++ src/chatbot/chat.py
 @@ -2,6 +2,7 @@
 import logging
 from gradio import ChatInterface, Error
@@ -1177,6 +1165,40 @@ logger = logging.getLogger(__name__)
         response = {"respuesta": "Aún no está implementado"}
         self.history.append(Message(text=response["respuesta"], own=False))
         return response["respuesta"]
+```
+
+```diff
+--- a/src/chatbot/services/files.py
++++ b/src/chatbot/services/files.py
+@@ -4,6 +4,7 @@
+from langchain_community.document_loaders import PyMuPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.schema import Document
+
++from chatbot.WeaviateManager import WeaviateManager
+from chatbot.config import DEFAULT_CONFIGURATION
+from chatbot.config import WeaviateConfig as WEAVIATE_CONFIG, configurations_availables
+
+@@ -17,4 +18,11 @@
+     try:
+-        #     simulate store the content into the database
+-        pass
++        weaviate_manager = WeaviateManager(
++            WEAVIATE_CONFIG.DB_HOST.value,
++            WEAVIATE_CONFIG.DB_PORT.value,
++            WEAVIATE_CONFIG.VECTORIZER_HOST.value,
++            WEAVIATE_CONFIG.VECTORIZER_PORT.value
++        )
++        weaviate_manager.load_vectorstore(
++            embed_model = selected_config.embed_model,
++            collection_name= selected_config.collection_name
++        )
++        weaviate_manager.add_documents(document)
+        except Exception as e:
+            raise UploadFileException(
+                 f"Error while processing the file {file_path}: {str(e)}"
+             ) from e
+    return True
 ```
 
 Finalmente, al igual que hicimos con `WeaviateManager`, vamos a definir una estructura de datos que nos permita organizar los argumentos que reciben las funciones y métodos cuando consideremos que son demasiados. Para ello, vamos a añadir una nueva `@dataclass` al fichero `src/chatbot/services/chat_services/types.py`
@@ -1208,8 +1230,6 @@ from gradio import ChatMessage
 from chatbot.config import BaseConfiguration, DEFAULT_CONFIGURATION, Prompts
 ```
 
-
-<a id="orgb0e7862"></a>
 
 ## prompt service
 
@@ -1404,3 +1424,5 @@ class Prompts:
 
 OLLAMA_API_PORT = 11434
 ```
+
+Al finalizar, deberíamos poder interactuar con nuestro chat sin ningún problema.

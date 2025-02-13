@@ -1,13 +1,3 @@
-- [Definición de tipos auxiliares](#orgb4df1dc)
-  - [Uso de excepciones personalizadas](#orga39b499)
-  - [Constantes y datos de configuración](#org94da809)
-    - [Configuración de Weaviate](#orgc50b680)
-    - [Configuración de modelos LLM](#org0bf6938)
-
-
-
-<a id="orgb4df1dc"></a>
-
 # Definición de tipos auxiliares
 
 Para facilitar el desarrollo, es buena práctica definir tipos de datos propios que describan su propósito dentro del sistema. Estos tipos pueden ser simplemente *alias* si son equivalentes a uno ya existente, o bien, estructuras derivadas que combinen varios tipos básicos. En primer lugar, definiremos un *alias* que permita describir los mensajes.
@@ -130,7 +120,7 @@ class Conversation:
     conf: int = DEFAULT_CONFIGURATION
 ```
 
-Finalmente, listamos los elementos que necesitamos importar:
+Finalmente, incluimos los elementos que necesitamos importar:
 
 ```python
 from dataclasses import dataclass
@@ -257,8 +247,6 @@ class Conversation:
 ```
 
 
-<a id="orga39b499"></a>
-
 ## Uso de excepciones personalizadas
 
 Otra buena práctica es definir excepciones personalizadas para mejorar el control y la trazabilidad de los errores, especialmente en situaciones donde el flujo del programa se interrumpe. Por ejemplo, si se interrumpe la conexión entre el LLM y el back-end. el sistema no podrá proporcionar respuestas al usuario y será necesario terminar el proceso.
@@ -297,20 +285,16 @@ class InvalidFileExtensionError(UploadFileException):
 ```
 
 
-<a id="org94da809"></a>
-
 ## Constantes y datos de configuración
 
-En sistemas complejos, es recomendable centralizar las constantes y variables de configuración. Existen diversas maneras de definir estos valores, dependiendo de su propósito y del entorno en el que se ejecutará la aplicación.Por ejemplo, si se trata de un programa que van a descargar los usuarios y no queremos que tengan acceso al código fuente, podemos usar ficheros de texto plano o cualquier otro método que nos permita leer estas constantes cuando el proceso se ejecute. Por el contrario, cuando se trata de un sistema que van a emplear personas familiarizadas con el mismo, que contribuyen al desarrollo o buscamos rapidez suele ser habitual encontrar estos valores definidos dentro del código fuente.
+En sistemas complejos, es recomendable centralizar las constantes y variables de configuración. Existen diversas maneras de definir estos valores, dependiendo de su propósito y del entorno en el que se ejecutará la aplicación. Por ejemplo, si se trata de un programa que van a descargar los usuarios y no queremos que tengan acceso al código fuente, podemos usar ficheros de texto plano o cualquier otro método que nos permita leer estas constantes cuando el proceso se ejecute. Por el contrario, cuando se trata de un sistema que van a emplear personas familiarizadas con el mismo, que contribuyen al desarrollo o buscamos rapidez suele ser habitual encontrar estos valores definidos dentro del código fuente.
 
 En nuestro caso, optaremos por la segunda opción, ya que *Python* ofrece una sintaxis sencilla y clara para definir estas configuraciones.
 
 
-<a id="orgc50b680"></a>
-
 ### Configuración de Weaviate
 
-Cuando configuramos Docker, mencionamos la importancia de determinar el puerto en el que la base de datos escucha. Ahora debemos indicar a nuestra aplicación cuál es ese puerto. También, en el archivo de configuración de `docker-compose.yml`, usamos la sección `ports` para redirigir tráfico de red entre el sistema operativo y el contenedor. En nuestro caso, usamos el mismo puerto para los dos sistemas, aunque no es necesario. Configurar la re-dirección entre puertos, nos permite poder acceder a la IP de nuestro ordenador, en vez de usar la del docker, que puede ser variable salvo que se configure de explícitamente.
+Cuando configuramos Docker, mencionamos la importancia de determinar el puerto en el que la base de datos escucha. Ahora debemos indicar a nuestra aplicación cuál es ese puerto. También, en el archivo de configuración de `docker-compose.yml`, usamos la sección `ports` para redirigir tráfico de red entre el sistema operativo y el contenedor. En nuestro caso, usamos el mismo puerto para los dos sistemas, aunque no es necesario. Configurar la re-dirección entre puertos, nos permite poder acceder a la IP de nuestro ordenador, en vez de usar la del docker, que puede ser variable salvo que se configure explícitamente.
 
 Para definir estos valores, utilizamos un `Enum`, una estructura de datos que agrupa valores semánticamente relacionados y actúa como un conjunto de contantes.
 
@@ -325,8 +309,6 @@ class WeaviateConfig(Enum):
     VECTORIZER_PORT = 50051
 ```
 
-
-<a id="org0bf6938"></a>
 
 ### Configuración de modelos LLM
 
@@ -370,7 +352,7 @@ configurations_availables = (
 )
 ```
 
-También podemos tener constantes independientes, como la configuración por defecto del *preset* que utilizará si no se especifica uno Para ello añadimos una última linea:
+También podemos tener constantes independientes, como la configuración por defecto del *preset* que utilizará si no se especifica uno. Para ello añadimos una última linea:
 
 ```python
 DEFAULT_CONFIGURATION = 3

@@ -4,6 +4,7 @@ from langchain_community.document_loaders import PyMuPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 
+from chatbot.WeaviateManager import WeaviateManager
 from chatbot.config import DEFAULT_CONFIGURATION
 from chatbot.config import WeaviateConfig as WEAVIATE_CONFIG, configurations_availables
 
@@ -15,12 +16,21 @@ def upload_file(file_path) -> bool:
     document = split_documents(read_file(file_path))
     selected_config = configurations_availables[DEFAULT_CONFIGURATION]
     try:
-        #     simulate store the content into the database
-        pass
+        weaviate_manager = WeaviateManager(
+            WEAVIATE_CONFIG.DB_HOST.value,
+            WEAVIATE_CONFIG.DB_PORT.value,
+            WEAVIATE_CONFIG.VECTORIZER_HOST.value,
+            WEAVIATE_CONFIG.VECTORIZER_PORT.value
+        )
+        weaviate_manager.load_vectorstore(
+            embed_model = selected_config.embed_model,
+            collection_name= selected_config.collection_name
+        )
+        weaviate_manager.add_documents(document)
     except Exception as e:
         raise UploadFileException(
             f"Error while processing the file {file_path}: {str(e)}"
-            ) from e
+        ) from e
     return True
 
 def read_file(file_path):

@@ -270,8 +270,8 @@ class WeaviateManager:
                 - model_name: Embedding model name
                 - collection_name: Weaviate collection name
                 - query: Search query string
-                - initial_threshold: Starting similarity score threshold (default: 0.7)
-                - min_threshold: Minimum similarity score threshold (default: 0.5)
+                - initial_threshold: Starting similarity score threshold
+                - min_threshold: Minimum similarity score threshold
 
         Returns:
             BaseRetriever: A retriever instance configured with:
@@ -293,6 +293,7 @@ class WeaviateManager:
             The method stops when the minimum threshold is reached
         """
         self.load_vectorstore(embed_model=params.model_name, collection_name=params.collection_name)
+        print(params.collection_name, params.model_name)
         score_threshold = params.initial_threshold
         while score_threshold > params.min_threshold:
             retriever = self.vectorstore.as_retriever(

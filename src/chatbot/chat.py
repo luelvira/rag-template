@@ -67,7 +67,9 @@ class Chat(ChatInterface):
                     return []
             return "Processed files"
         if len(self.history) != len(history):
-            self.history = [Message.from_chat_message(msg) for msg in history]
+            self.history = [
+                Message(text = msg["content"], own=msg["role"] == "user") for msg in history
+            ]
         self.history.append(Message(text=msg["text"], own=True))
         response = chat_service.ask_memory(Conversation(chat_history=self.history))
         self.history.append(Message(text=response["respuesta"], own=False))
