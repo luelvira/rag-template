@@ -1163,6 +1163,9 @@ logger = logging.getLogger(__name__)
 -        # simulate the response from the service
 +       response = chat_service.ask_memory(Conversation(chat_history=self.history))
         response = {"respuesta": "Aún no está implementado"}
++       if isinstance(response, str):
++           logger.error(response)
++           raise Error("Se ha producido un error, por favor, intentelo más tarde")
         self.history.append(Message(text=response["respuesta"], own=False))
         return response["respuesta"]
 ```
@@ -1170,14 +1173,15 @@ logger = logging.getLogger(__name__)
 ```diff
 --- a/src/chatbot/services/files.py
 +++ b/src/chatbot/services/files.py
-@@ -4,6 +4,7 @@
+@@ -7,2 +7,4 @@
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 
+-from chatbot.config import DEFAULT_CONFIGURATION
++from chatbot.Exceptions import UploadFileException, InvalidFileExtensionError
 +from chatbot.WeaviateManager import WeaviateManager
-from chatbot.config import DEFAULT_CONFIGURATION
-from chatbot.config import WeaviateConfig as WEAVIATE_CONFIG, configurations_availables
++ from chatbot.config import WeaviateConfig as WEAVIATE_CONFIG, configurations_availables, DEFAULT_CONFIGURATION
 
 @@ -17,4 +18,11 @@
      try:
@@ -1198,6 +1202,8 @@ from chatbot.config import WeaviateConfig as WEAVIATE_CONFIG, configurations_ava
             raise UploadFileException(
                  f"Error while processing the file {file_path}: {str(e)}"
              ) from e
++        finally:
++            weaviate_manager.close()
     return True
 ```
 

@@ -1,3 +1,37 @@
+"""
+types.py
+
+This module defines the core data types used in the chatbot services. It provides
+structured data classes for managing conversations, messages, and chatbot options.
+
+The module includes:
+- Message: Represents a single chat message with text and ownership information
+- Conversation: Manages a collection of chat messages with configuration settings
+- ChatbotOptions: Stores configuration options for chatbot operation
+
+Key Features:
+- Type-safe data structures using Python dataclasses
+- Integration with Gradio's ChatMessage type
+- Configuration management through BaseConfiguration and Prompts
+- Default configuration handling
+
+Typical Usage:
+1. Import Message, Conversation, and ChatbotOptions from this module
+2. Create Message instances for individual chat messages
+3. Build Conversation objects with chat history and configuration
+4. Initialize ChatbotOptions with endpoint, configuration, and prompts
+
+Data Structures:
+- Message: Contains text content and ownership flag
+- Conversation: Manages chat history and configuration index
+- ChatbotOptions: Stores endpoint, configuration, and prompt settings
+
+Configuration:
+- Uses BaseConfiguration for model and collection settings
+- Integrates Prompts for response generation templates
+- Supports default configuration through DEFAULT_CONFIGURATION
+"""
+
 from dataclasses import dataclass
 from typing import List
 from gradio import ChatMessage
@@ -83,6 +117,7 @@ class Message:
         """
         return ChatMessage(content=self.text, role="user" if self.own else "assistant")
 
+
 @dataclass
 class Conversation:
     """
@@ -109,6 +144,7 @@ class Conversation:
     """
     chat_history: List[ChatMessage]
     conf: int = DEFAULT_CONFIGURATION
+
 
 @dataclass
 class ChatbotOptions:

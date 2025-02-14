@@ -1,5 +1,39 @@
+"""
+Configuration Module for Chatbot Application
+
+This module provides configuration settings and constants for the chatbot application.
+It includes:
+
+- WeaviateConfig: Enum class containing database and vectorizer connection settings
+- BaseConfiguration: Dataclass for core chatbot configuration parameters
+- Prompts: Dataclass containing predefined prompt templates for the chatbot
+
+Key Features:
+- Centralized configuration management
+- Type-safe configuration using Enums and Dataclasses
+- Predefined prompt templates for consistent chatbot responses
+- Default prompt selection mechanism
+
+Typical Usage:
+1. Import configuration classes from this module
+2. Use WeaviateConfig for database connection settings
+3. Initialize BaseConfiguration with collection and model details
+4. Access prompt templates through Prompts class
+5. Use default_prompt property for standard chatbot behavior
+
+Configuration Details:
+- WeaviateConfig provides default host and port settings
+- BaseConfiguration manages collection names and model selection
+- Prompts class offers multiple response templates with strict context usage
+
+Error Handling:
+- Configuration values are type-checked through dataclass and enum usage
+- Default values provided for critical settings
+"""
+
 from enum import Enum
 from dataclasses import dataclass
+
 
 class WeaviateConfig(Enum):
     """
@@ -9,6 +43,7 @@ class WeaviateConfig(Enum):
     DB_PORT = 8090
     VECTORIZER_HOST = "localhost"
     VECTORIZER_PORT = 50051
+
 
 @dataclass
 class BaseConfiguration:
@@ -34,13 +69,6 @@ class BaseConfiguration:
     collection_name: str
     embed_model:     str
     llm_model:       str
-
-configurations_availables = (
-    BaseConfiguration("collection_a", "sentence-transformers/all-MiniLM-L6-v2", "llama3.2"),
-    BaseConfiguration("collection_b",  "distilbert-base-nli-stsb-mean-tokens", "llama3.2"),
-    BaseConfiguration("collection_c", "sentence-transformers/paraphrase-MiniLM-L6-v2", "phi3.5"),
-    BaseConfiguration("collection_d", "distilbert-base-nli-stsb-mean-tokens", "phi3.5")
-)
 
 
 @dataclass
@@ -129,6 +157,12 @@ class Prompts:
             raise ValueError("Default prompt index must be an integer")
         self._default = value
 
-
-DEFAULT_CONFIGURATION = 3
 OLLAMA_API_PORT = 11434
+DEFAULT_CONFIGURATION = 3
+
+configurations_availables = (
+    BaseConfiguration("collection_a", "sentence-transformers/all-MiniLM-L6-v2", "llama3.2"),
+    BaseConfiguration("collection_b",  "distilbert-base-nli-stsb-mean-tokens", "llama3.2"),
+    BaseConfiguration("collection_c", "sentence-transformers/paraphrase-MiniLM-L6-v2", "phi3.5"),
+    BaseConfiguration("collection_d", "distilbert-base-nli-stsb-mean-tokens", "phi3.5")
+)
